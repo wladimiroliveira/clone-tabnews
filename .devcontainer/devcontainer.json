@@ -1,0 +1,37 @@
+{
+  "name": "clone-tabnews",
+  // Node 18 (lts/hydrogen) to match .nvmrc.
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
+
+  "features": {
+    // The host .gitconfig copied into the container points its credential
+    // helper at /usr/bin/gh, so the binary has to exist here as well.
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "next-dev",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Read-only so the container can use the host gh login without being able
+  // to change it. SSH keys are never mounted: VS Code forwards the host
+  // ssh-agent socket instead, so private keys stay on the host.
+  "mounts": [
+    "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind,readonly"
+  ],
+
+  "postCreateCommand": ".devcontainer/post-create.sh",
+
+  // uid/gid 1000, same as the host user, to keep bind mount ownership sane.
+  "remoteUser": "node",
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  }
+}
